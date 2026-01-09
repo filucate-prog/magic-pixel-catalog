@@ -52,7 +52,7 @@ if st.button("🚀 GÉNÉRER LE CATALOGUE"):
                     args=['--disable-blink-features=AutomationControlled', '--no-sandbox'])
                     page = browser.new_page()
                     page.goto(url_gemini,  wait_until="domcontentloaded", timeout=60000)
-                                    page.wait_for_timeout(5000)  # Attendre 5 secondes pour le contenu dynamique
+                page.wait_for_timeout(5000)  # Attendre 5 secondes pour le contenu dynamique
                     
                     # Extraction des textes (Prompts) et des images
                     prompts = page.query_selector_all(".user-query-text")
