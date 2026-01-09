@@ -54,17 +54,15 @@ if st.button("🚀 GÉNÉRER LE CATALOGUE"):
                     page.goto(url_gemini,  wait_until="domcontentloaded", timeout=60000)
                     
                     # Extraction des textes (Prompts) et des images
-                    prompts = page.query_selector_all(".user-query-text")
-                    responses = page.query_selector_all(".model-response-text")
-                    
-                    if not prompts:
+                # Extraction de tous les conteneurs de prompts utilisateur
+            prompts_containers = page.query_selector_all('[id^="user-query-content-"]')
+                    if not prompts_containers:
                         st.warning("Aucun contenu trouvé. Vérifiez que le lien est bien un lien de partage public.")
                     
                     # 5. Affichage des résultats dans une grille
-                    for i in range(len(prompts)):
-                        p_text = prompts[i].inner_text()
-                        img_element = responses[i].query_selector("img")
-                        
+                for i, container in enumerate(prompts_containers):                        p_text = prompts[i].inner_text()
+                    # Extraire le texte du prompt
+                    p_text = container.inner_text()                        
                         st.divider()
                         col1, col2 = st.columns([1, 1])
                         
