@@ -60,7 +60,7 @@ if st.button("🚀 GÉNÉRER LE CATALOGUE"):
                         st.warning("Aucun contenu trouvé. Vérifiez que le lien est bien un lien de partage public.")
                     
                     # 5. Affichage des résultats dans une grille
-                for i, container in enumerate(prompts_containers):                        p_text = prompts[i].inner_text()
+                for i, container in enumerate(prompts_containers):                        
                     # Extraire le texte du prompt
                     p_text = container.inner_text()                        
                         st.divider()
