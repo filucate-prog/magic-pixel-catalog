@@ -179,8 +179,7 @@ Tâche :
    - notes : notes optionnelles
 
 IMPORTANT : Renvoie uniquement un tableau JSON valide, sans texte avant ni après.
-"""    ]
-    
+"""    
     config = GenerateContentConfig(
         tools=tools,
         response_mime_type="application/json"
