@@ -185,11 +185,11 @@ IMPORTANT : Renvoie uniquement un tableau JSON valide, sans texte avant ni aprè
         response_mime_type="application/json"
     )    
     try:
-        response = client.models.generate_content(
+                response = client.models.generate_content(
             model=MODEL_ID,
-            contents=prompt,        )
-                    config=config,
-        
+            contents=prompt,
+            config=config,
+        )
         # Parser la réponse JSON
         if hasattr(response, "parsed") and response.parsed is not None:
             catalog = response.parsed
