@@ -154,59 +154,42 @@ def generate_catalog_from_gemini(share_url: str) -> List[Dict[str, Any]]:
     """
     
     # Outil URL Context
-    url_context_tool = types.Tool(url_context=types.UrlContext())
+    # Configuration des outils URL Context (syntaxe correcte)
+    tools = [{"url_context": {}}]    
     
-    # Prompt détaillé
-    contents = [
-        types.Content(
-            role="user",
-            parts=[
-                types.Part.from_text(
-                    f"""
-Tu as accès au contenu de cette page de partage Gemini : {share_url}
+    # Prompt simplifié avec l'URL
+    prompt = f"""
+Analyse le contenu de ce lien Gemini : {share_url}
 
 Cette page contient une conversation où l'utilisateur crée un catalogue
 d'images générées (prompts + images) pour Magic Pixel IA.
 
 Tâche :
 1. Parcours TOUTE la conversation.
-2. Détecte chaque "item" du catalogue (un item = un prompt + une image associée ou décrite).
-3. Pour chaque item, remplis STRICTEMENT le schéma JSON fourni.
+2. Détecte chaque "item" du catalogue (un item = un prompt + une image).
+3. Pour chaque item, crée un objet JSON avec ces champs :
+   - id : identifiant unique (ex: "item_001")
+   - title : titre court de l'item  
+   - prompt : prompt complet utilisé
+   - short_prompt : résumé court (~120 caractères)
+   - image_description : description de l'image
+   - style : style visuel (ex: "photo restoration")
+   - use_case : cas d'usage (ex: "restauration photo")
+   - tags : liste de 3-10 tags pertinents
+   - notes : notes optionnelles
 
-Instructions sur les champs :
-- "id" : génère un identifiant court et stable (ex: "portrait_vintage_001").
-- "title" : titre court qui décrit l'image (langage humain).
-- "prompt" : prompt COMPLET, prêt à être copié-collé.
-- "short_prompt" : version courte, max ~120 caractères.
-- "image_description" : description claire de l'image finale.
-- "style" : un seul style principal (ex: "photo restoration", "vintage portrait").
-- "use_case" : phrase courte décrivant le cas d'usage.
-- "tags" : 3 à 10 tags utiles (couleurs, ambiance, type de sujet).
-- "rating" : de 1 à 5 si estimable, sinon laisse vide.
-- "notes" : commentaires utiles pour Magic Pixel IA, sinon chaîne vide.
-
-IMPORTANT :
-- Ne renvoie que du JSON valide, sans texte avant ni après.
-- Respecte strictement les noms de champs et leurs types.
-- Si une info n'est pas présente, laisse le champ vide ("") ou tableau vide ([]).
-"""
-                )
-            ],
-        )
-    ]
+IMPORTANT : Renvoie uniquement un tableau JSON valide, sans texte avant ni après.
+"""    ]
     
-    config = types.GenerateContentConfig(
-        tools=[url_context_tool],
-        response_mime_type="application/json",
-        response_json_schema=catalog_schema,
-    )
-    
+    config = GenerateContentConfig(
+        tools=tools,
+        response_mime_type="application/json"
+    )    
     try:
         response = client.models.generate_content(
             model=MODEL_ID,
-            contents=contents,
-            config=config,
-        )
+            contents=prompt,        )
+                    config=config,
         
         # Parser la réponse JSON
         if hasattr(response, "parsed") and response.parsed is not None:
